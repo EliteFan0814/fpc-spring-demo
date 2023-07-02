@@ -17,7 +17,7 @@ public class HelloController {
         this.userService = userService;
     }
     @GetMapping("/")
-    public User index() {
-        return this.userService.getUserById(1);
+    public String index() {
+        return "123";
     }
 }
