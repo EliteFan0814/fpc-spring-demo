@@ -2,8 +2,11 @@ package com.example.fpcspringdemo.configration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +21,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers("/", "/home", "/auth/**", "login.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -40,5 +43,15 @@ public class WebSecurityConfig {
                         .build();
 
         return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        return new AuthenticationManager() {
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                return null;
+            }
+        };
     }
 }
