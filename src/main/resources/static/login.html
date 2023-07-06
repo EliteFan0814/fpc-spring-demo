@@ -16,6 +16,23 @@
     <label>密码：<input type="text" name="password"></label>
     <button type="submit">登录</button>
 </form>
+<div>
+    <form id="postForm">
+        <label>账号：<input type="text" name="username1"></label>
+        <label>密码：<input type="text" name="password1"></label>
+    </form>
+    <input type="button" id="postFormBtn" value="添加">
+</div>
+<script>
+    let postBtn = document.getElementById("postFormBtn");
+    postBtn.addEventListener("click", function (e) {
+        let formdata = new FormData(document.querySelector("#postForm"));
 
+        fetch('/auth/login', {method: "POST", body: formdata})
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(err => console.log('Request Failed', err));
+    })
+</script>
 </body>
 </html>

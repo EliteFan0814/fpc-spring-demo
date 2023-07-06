@@ -19,15 +19,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home", "/auth/**", "login.html").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
+        http.authorizeHttpRequests((requests) -> {
+                    requests.requestMatchers("/", "/home", "login.html").permitAll().anyRequest().authenticated();
+                })
+                .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
                 .logout((logout) -> logout.permitAll());
 
         return http.build();
@@ -35,23 +30,11 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("password")
-                        .roles("USER")
-                        .build();
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER").build();
 
         return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new AuthenticationManager() {
-            @Override
-            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                return null;
-            }
-        };
     }
 }

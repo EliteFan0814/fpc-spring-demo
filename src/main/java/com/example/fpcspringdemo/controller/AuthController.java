@@ -18,28 +18,29 @@ import java.util.Map;
 @Controller
 public class AuthController {
     private UserDetailsService userDetailsService;
-    private AuthenticationManager authenticationManager;
 
     @Inject
-    public AuthController(UserDetailsService userDetailsService,AuthenticationManager authenticationManager) {
+    public AuthController(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.authenticationManager = authenticationManager;
     }
 
-    @GetMapping("/auth")
+    @GetMapping("/auth/login")
     @ResponseBody
     public Object auth() {
-        return new Result("哈哈get",true);
+        return new Result("200", "哈哈哈",false);
     }
+
     @PostMapping("/auth/login")
-    public void login(@RequestBody Map<String, Object> usernameAndPassword) {
+    @ResponseBody
+    public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
         String username = (String) usernameAndPassword.get("username");
         String password = (String) usernameAndPassword.get("password");
-        try{
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            return new Result("200", "用户存在", false);
 
-        }catch(UsernameNotFoundException e){
-
+        } catch (UsernameNotFoundException e) {
+            return new Result("400", "用户不存在", false);
         }
 //        UsernamePasswordAuthenticationToken token =
 //                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
