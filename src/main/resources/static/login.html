@@ -29,8 +29,10 @@
         let formdata = new FormData(document.querySelector("#postForm"));
 
         fetch('/auth/login', {method: "POST", body: formdata})
-            .then(response => response.json())
-            .then(json => console.log(json))
+            .then(async response => {
+                const body = await response.text();
+                document.body.innerHTML = body
+            })
             .catch(err => console.log('Request Failed', err));
     })
 </script>

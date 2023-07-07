@@ -1,4 +1,4 @@
-package com.example.fpcspringdemo.service;
+package com.example.fpcspringdemo.entity;
 
 public class User {
     Integer id;
