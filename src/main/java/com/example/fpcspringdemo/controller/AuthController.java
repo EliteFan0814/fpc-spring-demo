@@ -35,6 +35,7 @@ public class AuthController {
     public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
         String username = (String) usernameAndPassword.get("username");
         String password = (String) usernameAndPassword.get("password");
+        System.out.println(password);
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             return new Result("200", "用户存在", false);

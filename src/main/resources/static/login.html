@@ -5,35 +5,62 @@
     <title>login</title>
 </head>
 <body>
+<div>html表单原生发送post请求</div>
 <form method="post" action="/auth/login">
     <label>账号：<input type="text" name="username"></label>
     <label>密码：<input type="text" name="password"></label>
-    <button type="submit">登录</button>
+    <button type="submit">post登录</button>
 </form>
-<br>
+<div>html表单原生发送get请求</div>
 <form method="get" action="/auth/login">
     <label>账号：<input type="text" name="username"></label>
     <label>密码：<input type="text" name="password"></label>
-    <button type="submit">登录</button>
+    <button type="submit">get登录</button>
 </form>
+
+<div>使用fetch发送请求</div>
 <div>
     <form id="postForm">
-        <label>账号：<input type="text" name="username1"></label>
-        <label>密码：<input type="text" name="password1"></label>
+        <label>账号：<input type="text" name="username" id="username"></label>
+        <label>密码：<input type="text" name="password" id="password"></label>
+        <input type="button" id="postFormBtn" value="发送FormData格式">
+        <input type="button" id="postFormBtn2" value="发送json格式">
     </form>
-    <input type="button" id="postFormBtn" value="添加">
+
 </div>
 <script>
     let postBtn = document.getElementById("postFormBtn");
+    let postBtn2 = document.getElementById("postFormBtn2");
     postBtn.addEventListener("click", function (e) {
         let formdata = new FormData(document.querySelector("#postForm"));
 
         fetch('/auth/login', {method: "POST", body: formdata})
             .then(async response => {
+                console.log(response)
                 const body = await response.text();
-                document.body.innerHTML = body
+                console.log(body)
+
             })
             .catch(err => console.log('Request Failed', err));
+    })
+
+
+    postBtn2.addEventListener("click", function () {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        fetch('/auth/login', {
+            method: "POST",
+            body: JSON.stringify({username, password}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(async response => {
+            console.log(response)
+            const body = await response.json();
+            if(body.status === "400"){
+                alert(body.msg);
+            }
+        }).catch(err => console.log('Request Failed', err));
     })
 </script>
 </body>
