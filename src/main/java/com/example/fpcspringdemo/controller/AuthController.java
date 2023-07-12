@@ -38,6 +38,8 @@ public class AuthController {
         System.out.println(password);
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            String TruePassword = userDetails.getPassword();
+            System.out.println(TruePassword);
             return new Result("200", "用户存在", false);
 
         } catch (UsernameNotFoundException e) {

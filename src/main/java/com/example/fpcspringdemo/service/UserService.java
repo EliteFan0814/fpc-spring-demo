@@ -20,7 +20,7 @@ public class UserService implements UserDetailsService {
     @Inject
     public UserService(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.save("gebilaowang", "gebilaowang");
+        this.save("gebilaowang", bCryptPasswordEncoder.encode("gebilaowang"));
     }
 
 //    保存用户名和加密后的密码
