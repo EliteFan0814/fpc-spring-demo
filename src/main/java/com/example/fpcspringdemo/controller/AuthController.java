@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,16 +19,18 @@ import java.util.Map;
 @Controller
 public class AuthController {
     private UserDetailsService userDetailsService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Inject
-    public AuthController(UserDetailsService userDetailsService) {
+    public AuthController(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @GetMapping("/auth/login")
     @ResponseBody
     public Object auth() {
-        return new Result("200", "哈哈哈",false);
+        return new Result("200", "哈哈哈", false);
     }
 
     @PostMapping("/auth/login")
@@ -38,10 +41,15 @@ public class AuthController {
         System.out.println(password);
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            String TruePassword = userDetails.getPassword();
-            System.out.println(TruePassword);
-            return new Result("200", "用户存在", false);
-
+            String trueName = userDetails.getUsername();
+            String truePassword = userDetails.getPassword();
+            System.out.println(trueName);
+            System.out.println(bCryptPasswordEncoder.matches(password,truePassword));
+            if (bCryptPasswordEncoder.matches(password,truePassword)) {
+                return new Result("200", "登录成功", true);
+            } else {
+                return new Result("400", "账号或密码不正确", false);
+            }
         } catch (UsernameNotFoundException e) {
             return new Result("400", "用户不存在", false);
         }
