@@ -24,7 +24,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers("/", "/home", "/auth/login", "login.html").permitAll().anyRequest().permitAll();
+                    requests.requestMatchers("/", "/home", "/auth/login", "login.html").permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
                 .logout((logout) -> logout.permitAll());
