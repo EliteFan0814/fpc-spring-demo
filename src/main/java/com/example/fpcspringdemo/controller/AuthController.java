@@ -1,8 +1,11 @@
 package com.example.fpcspringdemo.controller;
 
 
+import com.example.fpcspringdemo.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +23,6 @@ import java.util.Map;
 public class AuthController {
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @Inject
     public AuthController(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
@@ -33,6 +35,12 @@ public class AuthController {
         return new Result("200", "哈哈哈", false);
     }
 
+    @GetMapping("/doLogin")
+    @ResponseBody
+    public Object doLogin() {
+        return new Result("300", "ddd", false);
+    }
+
     @PostMapping("/auth/login")
     @ResponseBody
     public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
@@ -42,27 +50,38 @@ public class AuthController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             String trueName = userDetails.getUsername();
             String truePassword = userDetails.getPassword();
-            if (bCryptPasswordEncoder.matches(password,truePassword)) {
-                return new Result("200", "登录成功", true);
+            if (bCryptPasswordEncoder.matches(password, truePassword)) {
+                var token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(token);
+                User user = new User(1, "fpc", "hahaha");
+                return new Result("200", "登录成功", true, user);
             } else {
                 return new Result("400", "账号或密码不正确", false);
             }
         } catch (UsernameNotFoundException e) {
             return new Result("400", "用户不存在", false);
         }
-//        UsernamePasswordAuthenticationToken token =
-//                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+
     }
 
     private static class Result {
         private String status;
         private String msg;
         private boolean login;
+        private User data;
 
         public Result(String status, String msg, boolean login) {
             this.status = status;
             this.msg = msg;
             this.login = login;
+            this.data = null;
+        }
+
+        public Result(String status, String msg, boolean login, User data) {
+            this.status = status;
+            this.msg = msg;
+            this.login = login;
+            this.data = data;
         }
 
         public String getStatus() {
@@ -75,6 +94,10 @@ public class AuthController {
 
         public boolean isLogin() {
             return login;
+        }
+
+        public User getData() {
+            return data;
         }
     }
 }
