@@ -69,13 +69,14 @@ public class AuthController {
         } catch (UsernameNotFoundException e) {
             return new Result("400", "用户不存在", false);
         }
-        var token = new UsernamePasswordAuthenticationToken(userDetails, bCryptPasswordEncoder.encode(password), userDetails.getAuthorities());
+        var token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         try {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
             User user = new User(1, "fpc", "hahaha");
             return new Result("200", "登录成功", true, user);
         } catch (Exception e) {
+            System.out.println(e.toString());
             return new Result("400", "错误", false);
         }
 

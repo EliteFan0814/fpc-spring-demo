@@ -26,10 +26,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers("/", "/home", "auth/**", "/js/**", "login.html").permitAll().anyRequest().authenticated();
+                    requests.requestMatchers("/", "/home", "/js/**", "/login.html").permitAll()
+                            .requestMatchers("/auth/**").anonymous()
+                            .anyRequest().authenticated();
                 })
-                .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
-                .logout((logout) -> logout.permitAll());
+                .formLogin().disable()
+                .logout().disable();
+//                .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
+//                .logout((logout) -> logout.permitAll());
         return http.build();
     }
 
