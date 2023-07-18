@@ -18,18 +18,21 @@
     <button type="submit">get登录</button>
 </form>
 
-<div>使用fetch发送请求</div>
+<div>登录</div>
 <div>
     <form id="postForm">
         <label>账号：<input type="text" name="username" id="username"></label>
         <label>密码：<input type="text" name="password" id="password"></label>
         <input type="button" id="postFormBtn" value="发送FormData格式">
-        <input type="button" id="postFormBtn2" value="发送json格式">
+        <input type="button" id="postFormBtn2" value="登录">
     </form>
-
 </div>
 <div><a href="/hello">进入hello页面</a></div>
+<div id="auth">auth请求</div>
+<script src="/js/http.js"></script>
 <script>
+    watchClick("auth","/auth");
+
     let postBtn = document.getElementById("postFormBtn");
     let postBtn2 = document.getElementById("postFormBtn2");
     postBtn.addEventListener("click", function (e) {
@@ -44,8 +47,6 @@
             })
             .catch(err => console.log('Request Failed', err));
     })
-
-
     postBtn2.addEventListener("click", function () {
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
@@ -56,9 +57,8 @@
                 "Content-Type": "application/json"
             }
         }).then(async response => {
-            console.log(response)
             const body = await response.json();
-            if(body.status === "400"){
+            if (body.status === "400") {
                 alert(body.msg);
             }
         }).catch(err => console.log('Request Failed', err));

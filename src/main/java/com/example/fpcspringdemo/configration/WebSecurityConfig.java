@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -21,12 +22,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-//    UserDetailsService userDetailsService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers("/", "/home", "auth/login", "login.html").permitAll().anyRequest().authenticated();
+                    requests.requestMatchers("/", "/home", "auth/**", "/js/**", "login.html").permitAll().anyRequest().authenticated();
                 })
                 .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
                 .logout((logout) -> logout.permitAll());
@@ -44,12 +44,18 @@ public class WebSecurityConfig {
     }
 
 //    @Bean
-//    public AuthenticationManager authenticationManager() {
+//    public AuthenticationManager customAuthenticationManager() {
 //        return new AuthenticationManager() {
 //            @Override
 //            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-//                return null;
+//                authentication.setAuthenticated(true);
+//                return authentication;
 //            }
 //        };
 //    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }
