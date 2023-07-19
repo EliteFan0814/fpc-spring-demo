@@ -73,7 +73,7 @@ public class AuthController {
         try {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
-            User user = new User(1, "fpc", "hahaha");
+            User user = new User(1, "fpc", "假数据");
             return new Result("200", "登录成功", true, user);
         } catch (Exception e) {
             System.out.println(e.toString());
