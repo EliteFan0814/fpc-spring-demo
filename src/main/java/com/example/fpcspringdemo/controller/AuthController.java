@@ -40,7 +40,8 @@ public class AuthController {
         if (loggedUser == null) {
             return new Result("400", "用户没有登录", false);
         } else {
-            return new Result("200", "用户没有登录", true, userService.getUserByUserName(userName));
+            SecurityContextHolder.clearContext();
+            return new Result("200", "用户已登录", true, userService.getUserByUserName(userName));
         }
     }
 
