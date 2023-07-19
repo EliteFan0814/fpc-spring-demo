@@ -15,5 +15,47 @@
     <div><label> Password: <input type="password" name="password"/> </label></div>
     <div><input type="submit" value="登录"/></div>
 </form>
+
+<div>
+    <form id="postForm">
+        <label>账号：<input type="text" name="username" id="username"></label>
+        <label>密码：<input type="text" name="password" id="password"></label>
+        <input type="button" id="postFormBtn" value="发送FormData格式">
+        <input type="button" id="postFormBtn2" value="登录">
+    </form>
+</div>
+<script src="/js/http.js"></script>
+<script>
+    let postBtn = document.getElementById("postFormBtn");
+    postBtn.addEventListener("click", function (e) {
+        let formdata = new FormData(document.querySelector("#postForm"));
+
+        fetch('/auth/login', {method: "POST", body: formdata})
+            .then(async response => {
+                console.log(response)
+                const body = await response.text();
+                console.log(body)
+
+            })
+            .catch(err => console.log('Request Failed', err));
+    })
+    let postBtn2 = document.getElementById("postFormBtn2");
+    postBtn2.addEventListener("click", function () {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        fetch('/auth/login', {
+            method: "POST",
+            body: JSON.stringify({username, password}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(async response => {
+            const body = await response.json();
+            if (body.status === "400") {
+                alert(body.msg);
+            }
+        }).catch(err => console.log('Request Failed', err));
+    })
+</script>
 </body>
 </html>

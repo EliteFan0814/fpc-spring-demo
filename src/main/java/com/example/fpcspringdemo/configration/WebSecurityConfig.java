@@ -24,16 +24,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers("/", "/home", "/js/**", "/login.html").permitAll()
-                            .requestMatchers("/auth/**").anonymous()
+        http.csrf().disable()
+                .authorizeHttpRequests((requests) -> {
+                    requests.requestMatchers("/", "/home", "/js/**", "/login.html", "/auth/**").permitAll()
                             .anyRequest().authenticated();
                 })
-                .formLogin().disable()
-                .logout().disable();
-//                .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/doLogin").permitAll())
-//                .logout((logout) -> logout.permitAll());
+                .formLogin((form) -> form.loginPage("/login").loginProcessingUrl("doLogin").permitAll())
+                .logout((logout) -> logout.permitAll());
         return http.build();
     }
 

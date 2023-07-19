@@ -1,7 +1,8 @@
 package com.example.fpcspringdemo.service;
 
+import com.example.fpcspringdemo.entity.User;
+import com.example.fpcspringdemo.mapper.UserMapper;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,30 +16,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService implements UserDetailsService {
+    private UserMapper userMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private Map<String, String> userPasswords = new ConcurrentHashMap<>();
+//    private Map<String, User> users = new ConcurrentHashMap<>();
 
     @Inject
-    public UserService(BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserMapper userMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.save("fpc", "123456");
+        this.userMapper = userMapper;
+//        this.save("fpc", "fpc");
     }
 
-//    保存用户名和加密后的密码
+    //    保存用户名和加密后的密码
     public void save(String username, String password) {
-        userPasswords.put(username, bCryptPasswordEncoder.encode(password));
+        userMapper.saveUser(username, bCryptPasswordEncoder.encode(password));
+//        users.put(username, new User(1, username, bCryptPasswordEncoder.encode(password), ""));
     }
 
-    public String getPassword(String username) {
-        return userPasswords.get(username);
+    public User getUserByUserName(String username) {
+        return userMapper.findUserByUserName(username);
+//        return users.get(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (!userPasswords.containsKey(username)) {
+        User user = getUserByUserName(username);
+        if (user == null) {
             throw new UsernameNotFoundException("用户不存在");
         }
-        String encodedPassword = userPasswords.get(username);
-        return new User(username, encodedPassword, Collections.emptyList());
+        return new org.springframework.security.core.userdetails
+                .User(username, user.getEncryptedPassword(), Collections.emptyList());
     }
 }

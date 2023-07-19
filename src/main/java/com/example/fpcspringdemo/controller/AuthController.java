@@ -2,7 +2,7 @@ package com.example.fpcspringdemo.controller;
 
 
 import com.example.fpcspringdemo.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.fpcspringdemo.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,13 +21,13 @@ import java.util.Map;
 
 @Controller
 public class AuthController {
-    private UserDetailsService userDetailsService;
+    private UserService userService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private AuthenticationManager authenticationManager;
 
     @Inject
-    public AuthController(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
-        this.userDetailsService = userDetailsService;
+    public AuthController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
+        this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
     }
@@ -36,8 +36,12 @@ public class AuthController {
     @ResponseBody
     public Object auth() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("username:" + userName);
-        return new Result("200", "用户没有登录", false);
+        User loggedUser = userService.getUserByUserName(userName);
+        if (loggedUser == null) {
+            return new Result("400", "用户没有登录", false);
+        } else {
+            return new Result("200", "用户没有登录", true, userService.getUserByUserName(userName));
+        }
     }
 
     @GetMapping("/auth/1")
@@ -65,7 +69,7 @@ public class AuthController {
         String password = (String) usernameAndPassword.get("password");
         UserDetails userDetails = null;
         try {
-            userDetails = userDetailsService.loadUserByUsername(username);
+            userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             return new Result("400", "用户不存在", false);
         }
@@ -73,8 +77,7 @@ public class AuthController {
         try {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
-            User user = new User(1, "fpc", "hahaha");
-            return new Result("200", "登录成功", true, user);
+            return new Result("200", "登录成功", true, userService.getUserByUserName(username));
         } catch (Exception e) {
             System.out.println(e.toString());
             return new Result("400", "错误", false);
