@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>注册</div>
+<div>
+    <form id="postForm">
+        <label>账号：<input type="text" name="username" id="username"></label>
+        <label>密码：<input type="text" name="password" id="password"></label>
+        <input type="button" id="register" value="注册">
+    </form>
+</div>
+<script src="/js/http.js"></script>
+<script>
+    let register = document.getElementById("register");
+    register.addEventListener("click", function () {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        http("/auth/register", "POST", {username, password}).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+</script>
+</body>
+</html>

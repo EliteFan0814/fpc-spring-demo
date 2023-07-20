@@ -1,7 +1,11 @@
 // 封装请求
 const http = function (url, method = "GET", body) {
     return new Promise(function (resolve, reject) {
-        fetch(url, {method, body}).then(async response => {
+        fetch(url, {
+            method, headers: {
+                "Content-Type": "application/json"
+            }, body: JSON.stringify(body)
+        }).then(async response => {
             const {status, headers} = response
             const contentType = headers.get("Content-Type");
             if (status === 200) {
@@ -22,8 +26,8 @@ const http = function (url, method = "GET", body) {
 }
 const watchClick = function (target, url, method = "GET", body) {
     let targetDom = document.getElementById(target);
-    return targetDom.addEventListener("click",function(e){
-        http(url,method,body).then(res=>{
+    return targetDom.addEventListener("click", function (e) {
+        http(url, method, body).then(res => {
             console.log(res)
         })
     })
