@@ -16,8 +16,9 @@ import javax.inject.Inject;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+//    @Inject
 //    private UserService userService;
-//
+
 //    @Inject
 //    public WebSecurityConfig(UserService userService) {
 //        this.userService = userService;

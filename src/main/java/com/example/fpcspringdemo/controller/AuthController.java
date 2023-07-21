@@ -1,8 +1,10 @@
 package com.example.fpcspringdemo.controller;
 
 
+import com.example.fpcspringdemo.entity.LoginResult;
 import com.example.fpcspringdemo.entity.User;
 import com.example.fpcspringdemo.service.UserService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,10 +39,9 @@ public class AuthController {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedUser = userService.getUserByUserName(userName);
         if (loggedUser == null) {
-            return new Result("400", "用户没有登录", false);
+            return LoginResult.loginFailed("用户没有登录");
         } else {
-//            SecurityContextHolder.clearContext();
-            return new Result("200", "用户已登录", true, userService.getUserByUserName(userName));
+            return LoginResult.loginSuccess("用户已登录", userService.getUserByUserName(userName));
         }
     }
 
@@ -59,51 +60,58 @@ public class AuthController {
     @GetMapping("/doLogin")
     @ResponseBody
     public Object doLogin() {
-        return new Result("300", "ddd", false);
+        return new LoginResult("300", "ddd", false);
     }
 
     @PostMapping("/auth/register")
     @ResponseBody
-    public Result register(@RequestBody Map<String, String> usernameAndPassword) {
+    public LoginResult register(@RequestBody Map<String, String> usernameAndPassword) {
         String username = usernameAndPassword.get("username");
         String password = usernameAndPassword.get("password");
         if (username == null || password == null) {
-            return new Result("400", "请输入用户名和密码", false);
+            return LoginResult.loginFailed("请输入用户名和密码");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return new Result("400", "用户名长度在1-15个字符", false);
+            return LoginResult.loginFailed("用户名长度在1-15个字符");
         }
         if (password.length() < 1 || password.length() > 15) {
-            return new Result("400", "密码长度在1-15个字符", false);
+            return LoginResult.loginFailed("密码长度在1-15个字符");
         }
-        User user = userService.getUserByUserName(username);
-        if (user == null) {
+        try {
             userService.save(username, password);
-            return new Result("200", "注册成功", false);
-        } else {
-            return new Result("400", "用户已存在", false);
+
+        } catch (DuplicateKeyException e) {
+            return LoginResult.loginFailed("用户已存在");
         }
+        return new LoginResult("200", "注册成功", false);
+//        User user = userService.getUserByUserName(username);
+//        if (user == null) {
+//            userService.save(username, password);
+//            return new Result("200", "注册成功", false);
+//        } else {
+//            return new Result("400", "用户已存在", false);
+//        }
     }
 
     @PostMapping("/auth/login")
     @ResponseBody
-    public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
+    public LoginResult login(@RequestBody Map<String, Object> usernameAndPassword) {
         String username = (String) usernameAndPassword.get("username");
         String password = (String) usernameAndPassword.get("password");
         UserDetails userDetails = null;
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new Result("400", "用户不存在", false);
+            return new LoginResult("400", "用户不存在", false);
         }
         var token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         try {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
-            return new Result("200", "登录成功", true, userService.getUserByUserName(username));
+            return new LoginResult("200", "登录成功", true, userService.getUserByUserName(username));
         } catch (Exception e) {
             System.out.println(e.toString());
-            return new Result("400", "错误", false);
+            return new LoginResult("400", "错误", false);
         }
 
 
@@ -122,50 +130,15 @@ public class AuthController {
 
     @PostMapping("/auth/logout")
     @ResponseBody
-    public Result logout() {
+    public LoginResult logout() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User LoggedInUser = userService.getUserByUserName(username);
         if (LoggedInUser == null) {
-            return new Result("400", "用户未登录", false);
+            return LoginResult.loginFailed("用户未登录");
         } else {
             SecurityContextHolder.clearContext();
-            return new Result("200", "成功退出", false);
+            return new LoginResult("200", "成功退出", false);
         }
     }
 
-    private static class Result {
-        private String status;
-        private String msg;
-        private boolean isLogin;
-        private User data;
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getMsg() {
-            return msg;
-        }
-
-        public boolean isIsLogin() {
-            return isLogin;
-        }
-
-        public User getData() {
-            return data;
-        }
-
-        public Result(String status, String msg, boolean isLogin) {
-            this.status = status;
-            this.msg = msg;
-            this.isLogin = isLogin;
-        }
-
-        public Result(String status, String msg, boolean isLogin, User data) {
-            this.status = status;
-            this.msg = msg;
-            this.isLogin = isLogin;
-            this.data = data;
-        }
-    }
 }
