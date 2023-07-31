@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,13 +22,11 @@ import java.util.Map;
 @Controller
 public class AuthController {
     private UserService userService;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
     private AuthenticationManager authenticationManager;
 
     @Inject
-    public AuthController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = userService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
     }
 
@@ -113,19 +110,6 @@ public class AuthController {
             System.out.println(e.toString());
             return new LoginResult("400", "错误", false);
         }
-
-
-//        String trueName = userDetails.getUsername();
-//        String truePassword = userDetails.getPassword();
-//        if (bCryptPasswordEncoder.matches(password, truePassword)) {
-//            var token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-//            customAuthenticationManager.authenticate(token);
-//            SecurityContextHolder.getContext().setAuthentication(token);
-//            User user = new User(1, "fpc", "hahaha");
-//            return new Result("200", "登录成功", true, user);
-//        } else {
-//            return new Result("400", "账号或密码不正确", false);
-//        }
     }
 
     @PostMapping("/auth/logout")
