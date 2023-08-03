@@ -85,6 +85,16 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.5.13</version>
+                <configuration>
+                    <url>jdbc:mysql://localhost:3306/xdml</url>
+                    <user>root</user>
+                    <password>123456</password>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
