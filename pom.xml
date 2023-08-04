@@ -88,7 +88,7 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>8.5.13</version>
+                <version>4.2.0</version>
                 <configuration>
                     <url>jdbc:mysql://localhost:3306/xdml</url>
                     <user>root</user>
