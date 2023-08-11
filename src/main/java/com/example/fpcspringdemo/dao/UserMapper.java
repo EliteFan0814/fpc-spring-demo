@@ -1,4 +1,4 @@
-package com.example.fpcspringdemo.mapper;
+package com.example.fpcspringdemo.dao;
 
 import com.example.fpcspringdemo.entity.User;
 import org.apache.ibatis.annotations.Insert;

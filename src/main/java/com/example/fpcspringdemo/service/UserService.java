@@ -1,7 +1,7 @@
 package com.example.fpcspringdemo.service;
 
 import com.example.fpcspringdemo.entity.User;
-import com.example.fpcspringdemo.mapper.UserMapper;
+import com.example.fpcspringdemo.dao.UserMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
