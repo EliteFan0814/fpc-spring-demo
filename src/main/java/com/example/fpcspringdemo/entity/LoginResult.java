@@ -1,46 +1,25 @@
 package com.example.fpcspringdemo.entity;
 
 
-public class LoginResult {
-    private String status;
-    private String msg;
-    private boolean isLogin;
-    private User data;
+public class LoginResult<T> extends Result {
 
-    public static LoginResult loginFailed(String message) {
-        return new LoginResult("400", message, false);
+    public static LoginResult noLogin() {
+        return new LoginResult("400", "用户没有登录", null);
     }
 
-    public static LoginResult loginSuccess(String message, User UserInfo) {
-        return new LoginResult("200", message, true, UserInfo);
+    public static LoginResult logout() {
+        return new LoginResult("200", "退出登录", null);
     }
 
-    public String getStatus() {
-        return status;
+    public static LoginResult loginFailed(String msg) {
+        return new LoginResult("400", msg, null);
     }
 
-    public String getMsg() {
-        return msg;
+    public static LoginResult loginSuccess(String msg, User user) {
+        return new LoginResult("ok", msg, user);
     }
 
-    public boolean isIsLogin() {
-        return isLogin;
-    }
-
-    public User getData() {
-        return data;
-    }
-
-    public LoginResult(String status, String msg, boolean isLogin) {
-        this.status = status;
-        this.msg = msg;
-        this.isLogin = isLogin;
-    }
-
-    public LoginResult(String status, String msg, boolean isLogin, User data) {
-        this.status = status;
-        this.msg = msg;
-        this.isLogin = isLogin;
-        this.data = data;
+    protected LoginResult(String status, String msg, T data) {
+        super(status, msg, data);
     }
 }

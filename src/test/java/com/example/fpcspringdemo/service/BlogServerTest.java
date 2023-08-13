@@ -17,13 +17,21 @@ public class BlogServerTest {
     BlogDao blogDao;
     @InjectMocks
     BlogServer blogServer;
+
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         blogServer = new BlogServer(blogDao);
     }
+
     @Test
-    public void getBlogsFromDb(){
+    public void getBlogsFromDb() {
+        blogServer.getBlogs(1, 10, null);
+        Mockito.verify(blogDao).getBlogs(1, 10, null);
+    }
+
+    @Test
+    public void returnFailureWhenExceptionThrow() {
+        Mockito.when(blogDao.getBlogs(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenThrow(new Exception());
         blogServer.getBlogs(1,10,null);
-        Mockito.verify(blogDao).getBlogs(1,10,null);
     }
 }

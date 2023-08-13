@@ -36,9 +36,9 @@ public class AuthController {
     public Object auth() {
 //        String userName = .getName();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User loggedUser = userService.getUserByUserName(authentication == null?null:authentication.getName());
+        User loggedUser = userService.getUserByUserName(authentication == null ? null : authentication.getName());
         if (loggedUser == null) {
-            return LoginResult.loginFailed("用户没有登录");
+            return LoginResult.noLogin();
         } else {
             return LoginResult.loginSuccess("用户已登录", loggedUser);
         }
@@ -59,7 +59,7 @@ public class AuthController {
     @GetMapping("/doLogin")
     @ResponseBody
     public Object doLogin() {
-        return new LoginResult("300", "ddd", false);
+        return LoginResult.noLogin();
     }
 
     @PostMapping("/auth/register")
@@ -82,7 +82,7 @@ public class AuthController {
         } catch (DuplicateKeyException e) {
             return LoginResult.loginFailed("用户已存在");
         }
-        return new LoginResult("200", "注册成功", false);
+        return LoginResult.loginSuccess("注册成功", null);
 //        User user = userService.getUserByUserName(username);
 //        if (user == null) {
 //            userService.save(username, password);
@@ -101,16 +101,16 @@ public class AuthController {
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new LoginResult("400", "用户不存在", false);
+            return LoginResult.loginFailed("用户不存在");
         }
         var token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         try {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
-            return new LoginResult("200", "登录成功", true, userService.getUserByUserName(username));
+            return LoginResult.loginSuccess("登录成功", userService.getUserByUserName(username));
         } catch (Exception e) {
             System.out.println(e.toString());
-            return new LoginResult("400", "错误", false);
+            return LoginResult.loginFailed("错误");
         }
     }
 
@@ -123,7 +123,7 @@ public class AuthController {
             return LoginResult.loginFailed("用户未登录");
         } else {
             SecurityContextHolder.clearContext();
-            return new LoginResult("200", "成功退出", false);
+            return LoginResult.logout();
         }
     }
 
